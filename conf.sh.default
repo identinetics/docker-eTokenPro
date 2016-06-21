@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# config for Safenet Authentication Client
+# Caveat: home directory is not persistent -> mapped to /tmp in LiveCD
+
+# configure container
+export IMAGENAME="rhoerbe/safenetAC"
+export CONTAINERNAME="safenetAC"
+# configured for LiveCD:
+export CONTAINERUSER="liveuser"     # group and user to run container
+export CONTAINERUID="1000"   # gid and uid for CONTAINERUSER
+export BUILDARGS="
+    --build-arg USERNAME=$CONTAINERUSER \
+    --build-arg UID=$CONTAINERUID \
+"
+export ENVSETTINGS="
+    -e USERNAME=$CONTAINERUSER
+"
+export NETWORKSETTINGS="
+"
+export VOLROOT="/docker_volumes/$CONTAINERNAME"  # container volumes on docker host
+export VOLMAPPING="
+    -v $VOLROOT/log/:/var/log/:Z
+    -v /tmp/home/$CONTAINERUSER:/home/$CONTAINERUSER/:Z
+"
+export STARTCMD='/start.sh'
+
+# first create user/group/host directories if not existing
+if ! id -u $CONTAINERUSER &>/dev/null; then
+    groupadd -g $CONTAINERUID $CONTAINERUSER
+    adduser -M -g $CONTAINERUID -u $CONTAINERUID $CONTAINERUSER
+fi
+
+# create dir with given user if not existing, relative to $HOSTVOLROOT; set/repair ownership
+function chkdir {
+    dir=$1
+    user=$2
+    mkdir -p "$VOLROOT/$dir"
+    chown -R $user:$user "$VOLROOT/$dir"
+}
+chkdir log/ $CONTAINERUSER
+chkedir /tmp/home/$CONTAINERUSER $CONTAINERUSER
+
