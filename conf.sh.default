@@ -1,48 +1,54 @@
 #!/usr/bin/env bash
 
 # config for Safenet Authentication Client
-# Caveat: home directory is not persistent -> mapped to /tmp in LiveCD
 
-# configure container
-export IMAGENAME="rhoerbe/safenetAC"
-export CONTAINERNAME="safenetAC"
-# configured for LiveCD:
-export CONTAINERUSER="liveuser"     # group and user to run container
-export CONTAINERUID="1000"   # gid and uid for CONTAINERUSER
-export BUILDARGS="
-    --build-arg USERNAME=$CONTAINERUSER \
-    --build-arg UID=$CONTAINERUID \
-"
-export ENVSETTINGS="
-    -e USERNAME=$CONTAINERUSER
-"
-export NETWORKSETTINGS="
-"
-export VOLROOT="/docker_volumes/$CONTAINERNAME"  # container volumes on docker host
-export VOLMAPPING="
-    -v $VOLROOT/log/:/var/log/:Z
-    -v /tmp/home/$CONTAINERUSER:/home/$CONTAINERUSER/:Z
-"
-export STARTCMD='/start.sh'
+#!/usr/bin/env bash
 
-# first start: create user/group/host directories
-if [ $(id -u) -ne 0 ]; then
-    sudo="sudo"
-fi
-if ! id -u $CONTAINERUSER &>/dev/null; then
-    $sudo groupadd -g $CONTAINERUID $CONTAINERUSER
-    $sudo adduser -M --gid $CONTAINERUID --uid $CONTAINERUID $CONTAINERUSER  #CentOS
-    #$sudo adduser --gid $CONTAINERUID --disabled-password --gecos "" --uid $CONTAINERUID $CONTAINERUSER #Debian
-fi
+# settings for docker build, run and exec
 
-# create dir with given user if not existing, relative to $HOSTVOLROOT
-function chkdir {
-    dir=$1
-    user=$2
-    $sudo mkdir -p "$VOLROOT/$dir"
-    $sudo chown -R $user:$user "$VOLROOT/$dir"
+main() {
+    SCRIPTDIR=$(cd $(dirname $BASH_SOURCE[0]) && pwd)
+    source $SCRIPTDIR/dscripts/conf_lib.sh  # load library functions
+
+    set_volume_root
+    set_image_and_container_name
+    set_run_args
+    set_vol_mapping
+    enable_x11_client
+    enable_pkcs11
 }
 
-chkdir log/ $CONTAINERUSER
-chkedir /tmp/home/$CONTAINERUSER $CONTAINERUSER
 
+set_volume_root() {
+    DOCKERVOL_ROOT='/root/dv'
+    if [ "$TRAVIS" == "true" ]; then
+        DOCKERVOL_ROOT='./dv';
+        DOCKERLOG_ROOT='./dl';
+    fi
+}
+
+
+set_image_and_container_name() {
+    # This IMGID qualifies image, container, user and IP adddress; this is helpful for managing
+    # processes on the docker host etc.
+    IMGID=''
+    PROJSHORT='keymgmt-safenetac'
+    export IMAGENAME="rhoerbe/$PROJSHORT${IMGID}"  # [a-z_0-9]
+    export CONTAINERNAME="${IMGID}$PROJSHORT"
+    export DOCKER_REGISTRY='index.docker.io'
+}
+
+
+set_run_args() {
+    export ENVSETTINGS=""
+    export STARTCMD='bash'  # unset or blank to use image default
+}
+
+
+set_vol_mapping() {
+    map_docker_volume "${CONTAINERNAME}.root" '/root' 'Z' $DOCKERVOL_ROOT
+    map_docker_volume "${CONTAINERNAME}.log" "$LOGDIR" 'Z' $DOCKERVOL_ROOT
+}
+
+
+main
