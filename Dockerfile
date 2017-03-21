@@ -1,5 +1,6 @@
 FROM rhoerbe/keymgmt
-
+LABEL version="0.3.1" \
+      didi_dir="https://raw.githubusercontent.com/identinetics/keymgmt-safenetac/master/didi"
 # Extend base image with Gemalto/Safenet/Alladin eTokenPro support
 
 # Safenet Authentication Client
