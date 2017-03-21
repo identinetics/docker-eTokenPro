@@ -3,6 +3,7 @@
 configured to work with secure LiveCD: https://github.com/identinetics/PVZDliveCD[PVZDliveCD @Github]
 
 1. Get SAC: see link:install/safenet/README.adoc
-2. ./build.sh
-3. docker push
-4. configure and run PVZDLiveCD
+2. dscripts/build.sh
+3. dscripts/push.sh
+4. dscripts/sign.sh
+5. configure and run PVZDLiveCD
