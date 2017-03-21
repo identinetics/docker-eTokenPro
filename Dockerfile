@@ -1,5 +1,5 @@
 FROM rhoerbe/keymgmt
-LABEL version="0.3.1" \
+LABEL version="0.4.0" \
       didi_dir="https://raw.githubusercontent.com/identinetics/keymgmt-safenetac/master/didi"
 # Extend base image with Gemalto/Safenet/Alladin eTokenPro support
 
@@ -16,5 +16,5 @@ RUN yum -y install gtk2 xdg-utils \
  && rpm -i /opt/sac/SafenetAuthenticationClient_x86_64.rpm --nodeps \
  && yum clean all
 
-ENV PKCS11_CARD_DRIVER='/usr/lib64/libeToken.so'
+ENV PKCS11_CARD_DRIVER='/usr/lib64/libetvTokenEngine.so'
 COPY install/scripts/*.sh /
