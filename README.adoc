@@ -7,3 +7,9 @@ configured to work with secure LiveCD: https://github.com/identinetics/PVZDliveC
 3. dscripts/push.sh
 4. dscripts/sign.sh
 5. configure and run PVZDLiveCD
+
+
+## Restriction
+
+SACTool does not work in thtis configuration. The SAC-installation is used to install the
+PKCS11 card driver. Operations using pkcs11-tool do work.

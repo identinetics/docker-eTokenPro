@@ -12,11 +12,13 @@ fi
 logger -p local0.info "Starting PC/SC Smartcard Service"
 $sudo /usr/sbin/pcscd
 
-logger -p local0.info "Starting Safenet Token Monitor"
-$sudo /usr/bin/SACSrv
+#logger -p local0.info "Starting Safenet Token Monitor"
+# not enabled - need to test out dbus support in docker container
+#$sudo /usr/bin/SACSrv
 
-logger -p local0.info "Starting HAVEGE Entropy Service"
-$sudo /usr/sbin/haveged
+# HAVEGE Entropy Service disabled - not so useful on system with clock and modern Linux kernel
+#$sudo /usr/sbin/haveged
 
+printf 'entropy available: %s bytes\n' $(cat /proc/sys/kernel/random/entropy_avail)
 exec bash
 
