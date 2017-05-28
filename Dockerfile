@@ -19,5 +19,5 @@ RUN yum -y install gtk2 xdg-utils PackageKit-gtk3-module libcanberra-gtk3 \
 ENV PKCS11_CARD_DRIVER='/usr/lib64/libetvTokenEngine.so'
 
 # overwrite default start.sh
-COPY install/scripts/start.sh /
-RUN chmod +x /start.sh
+COPY install/scripts/start.sh /scripts/
+RUN chmod +x /scripts/start.sh
