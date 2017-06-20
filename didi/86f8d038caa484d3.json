@@ -1,0 +1,10 @@
+{
+    "FormatVersion": 1, 
+    "RepoTags": [
+        "rhoerbe/keymgmt-safenetac:latest"
+    ], 
+    "RepoDigests": [
+        "rhoerbe/keymgmt-safenetac@sha256:86f8d038caa484d3a99047f47058a4194c0131683236d9b73413a960e2e33650"
+    ], 
+    "Created": "2017-06-20T21:30:35.283641763Z"
+}
