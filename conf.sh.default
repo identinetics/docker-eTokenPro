@@ -44,15 +44,29 @@ set_run_args() {
     export ENVSETTINGS="-e PKCS11_CARD_DRIVER=/usr/lib64/libetvTokenEngine.so"  # Safenet eTokenPro
     export ENVSETTINGS="$ENVSETTINGS -e USERPIN=Secret.1"  # configure user password
     export ENVSETTINGS="$ENVSETTINGS -e SOPIN=Secret.2"  # configure admin password
-    export STARTCMD='bash'  # unset or blank to use image default
+    export STARTCMD='/scripts/start.sh'
 }
 
 
 set_vol_mapping() {
     VOLLIST=''
     VOLMAPPING=''
+    mount_ramdisk
     map_docker_volume "${CONTAINERNAME}.root" '/root' 'Z' $DOCKERVOL_ROOT
 }
 
 
-main
+mount_ramdisk() {
+    RAMDISKPATH="${DOCKERVOL_ROOT}/${CONTAINERNAME}/ramdisk"
+    df -Th | tail -n +2 | egrep "tmpfs|ramfs" >/dev/null | awk '{print $7}'| grep ${RAMDISKPATH}
+    if (( $? != 0 )); then # ramfs not mounted at $RAMDISKPATH
+        $sudo mkdir -p ${RAMDISKPATH}/ramdisk
+        $sudo mount -t tmpfs -o size=1M tmpfs ${RAMDISKPATH}  # TODO tmpfs -> ramfs
+        cd ${RAMDISKPATH}
+        [[ $PWD != "$RAMDISKPATH" ]] && zenity --error --text "could not make or mount ${RAMDISKPATH}" && exit 1
+        echo "Created ramdisk at ${RAMDISKPATH} (no size limit imposed - using up available RAM will freeze your system!)"
+    fi
+}
+
+
+main "$@"
