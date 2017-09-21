@@ -11,5 +11,6 @@ configured to work with secure LiveCD: https://github.com/identinetics/PVZDliveC
 
 ## Restriction
 
-SACTool does not work in thtis configuration. The SAC-installation is used to install the
-PKCS11 card driver. Operations using pkcs11-tool do work.
+SACTool does not work in this configuration (help would be welcome).
+The SAC-installation is used to install the PKCS11 card driver.
+Operations using pkcs11-tool and p11-toll do work.

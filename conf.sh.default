@@ -2,63 +2,82 @@
 
 main() {
     SCRIPTDIR=$(cd $(dirname $BASH_SOURCE[0]) && pwd)
-    source $SCRIPTDIR/dscripts/conf_lib.sh  # load library functions
-    set_volume_root
-    set_image_and_container_name
-    set_image_signature_args
-    set_run_args
-    set_vol_mapping
+    source $SCRIPTDIR/dscripts/conf_lib.sh  $@         # load library functions
+    configlib_version=2  # compatible version of conf_lib.sh
+    check_version $configlib_version
+    # do_not_build $@ # uncomment this line to pull/load image
+    init_sudo
+    _set_volume_root
+    _set_image_and_container_name
+    _set_image_signature_args
+    _set_run_args
     enable_x11_client
     enable_pkcs11
 }
 
 
-set_volume_root() {
-    DOCKERVOL_ROOT='/root/dv'
-    if [ "$TRAVIS" == "true" ]; then
-        DOCKERVOL_ROOT='./dv';
-        DOCKERLOG_ROOT='./dl';
-    fi
+_set_volume_root() {
+    # container volumes mounted to host paths, or symlinks to docker volumes
+    DOCKERVOL_SHORT='./dv'
+    DOCKERLOG_SHORT='./dl'
+    mkdir -p $$DOCKERVOL_ROOT $DOCKERVOL_LOG
+    DOCKER_VOLUME_ROOT='/var/lib/docker/volumes'  # hard coded - check for your config if applicable!
+    #export DOCKERFILE_DIR=  # set this if the Dockerfile is not in the directory containing the dscripts subproject
 }
 
 
-set_image_and_container_name() {
-    # This IMGID qualifies image, container, user and IP adddress; this is helpful for managing
+_set_image_and_container_name() {
+    # IMGID qualifies image, container, user and IP adddress; this is helpful for managing
     # processes on the docker host etc.
     IMGID=''
     PROJSHORT='keymgmt-safenetac'
     export IMAGENAME="rhoerbe/$PROJSHORT${IMGID}"  # [a-z_0-9]
     export CONTAINERNAME="${IMGID}$PROJSHORT"
-    export DOCKER_REGISTRY='index.docker.io'
+    export DOCKER_REGISTRY=''
 }
 
 
-set_image_signature_args() {
+_set_image_signature_args() {
     export DIDI_SIGNER='rh@identinetics.com'  # PGP uid
     export GPG_SIGN_OPTIONS='--default-key 904F1906'
 }
 
 
-set_run_args() {
-    enable_pkcs11
-    export ENVSETTINGS="-e PKCS11_CARD_DRIVER=/usr/lib64/libetvTokenEngine.so"  # Safenet eTokenPro
-    export ENVSETTINGS="$ENVSETTINGS -e USERPIN=Secret.1"  # configure user password
+_set_run_args() {
+    pkcs11lib="-e PYKCS11LIB=/usr/lib64/libetvTokenEngine.so"  # Safenet eTokenPro
+
+    export ENVSETTINGS="-e PYKCS11LIB=$pkcs11lib"
+    export ENVSETTINGS="$ENVSETTINGS -e PYKCS11PIN=Secret.1"  # configure token password
     export ENVSETTINGS="$ENVSETTINGS -e SOPIN=Secret.2"  # configure admin password
-    export STARTCMD='/scripts/start.sh'
+    export ENVSETTINGS="$ENVSETTINGS -e HSMUSBDEVICE=none" # output of lsusb
+    export ENVSETTINGS="$ENVSETTINGS -e HSMP11DEVICE=SoftHSM"  # output of pkcs11-tool --list-token-slots
+    export ENVSETTINGS="$ENVSETTINGS -e SOFTHSM=True"  # causes test scripts to skip lsusb
+
+    export STARTCMD=''
+    enable_pkcs11
 }
 
 
-set_vol_mapping() {
+create_intercontainer_network() {
+    export NETWORKSETTINGS=""
+}
+
+
+setup_vol_mapping() {
+    # Create docker volume (-> map_docker_volume) or map a host dir (-> map_host_directory)
+    # In both cases create a shortcut in the shortcut directory ($DOCKERVOL_ROOT, DOCKERLOG_SHORT)
+    mode=$1  # create (used by run.sh)/list (used by manage.sh)
     VOLLIST=''
     VOLMAPPING=''
+    map_docker_volume $mode "${CONTAINERNAME}.root" '/root' 'Z' $DOCKERVOL_SHORT
     mount_ramdisk
-    map_docker_volume "${CONTAINERNAME}.root" '/root' 'Z' $DOCKERVOL_ROOT
+    map_host_directory "${RAMDISKPATH}" '/ramdisk' 'Z'
 }
 
 
 mount_ramdisk() {
     RAMDISKPATH="${DOCKERVOL_ROOT}/${CONTAINERNAME}/ramdisk"
-    df -Th | tail -n +2 | egrep "tmpfs|ramfs" >/dev/null | awk '{print $7}'| grep ${RAMDISKPATH}
+    df -Th | tail -n +2 | egrep "tmpfs|ramfs" | awk '{print $7}'| grep ${RAMDISKPATH} >/dev/null
     if (( $? != 0 )); then # ramfs not mounted at $RAMDISKPATH
         $sudo mkdir -p ${RAMDISKPATH}/ramdisk
         $sudo mount -t tmpfs -o size=1M tmpfs ${RAMDISKPATH}  # TODO tmpfs -> ramfs
