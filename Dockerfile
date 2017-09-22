@@ -1,15 +1,17 @@
 FROM rhoerbe/keymgmt
 LABEL version="0.5.0" \
       didi_dir="https://raw.githubusercontent.com/identinetics/keymgmt-safenetac/master/didi"
-# Extend base image with Gemalto/Safenet/Alladin eTokenPro support
+
+# Extend base image with Gemalto/Safenet/Alladin eTokenPro (eToken5110 etc.) support
 
 # Safenet Authentication Client
 # The software has a proprietary license and must be obtained from the vendor
-# and copied into the build environment (install/safenet). Adapt the install path.
+# and copied into the build environment (install/i-safenetac-linux).
+# The referenced submodule i-safenetac-linux is only available for devices licensed to Identinetics
 
 
-COPY install/safenet/Linux_9_1_7-0/Installation/Standard/RPM/RPM-GPG-KEY-SafenetAuthenticationClient /opt/sac/
-COPY install/safenet/Linux_9_1_7-0/Installation/Standard/RPM/SafenetAuthenticationClient-9.1.7-0.x86_64.rpm /opt/sac/SafenetAuthenticationClient_x86_64.rpm
+COPY install/i-safenetac-linux/safenet/linux/Installation/Standard/RPM/RPM-GPG-KEY-SafenetAuthenticationClient /opt/sac/
+COPY install/i-safenetac-linux/safenet/linux/Installation/Standard/RPM/SafenetAuthenticationClient-9.1.7-0.x86_64.rpm /opt/sac/SafenetAuthenticationClient_x86_64.rpm
 
 RUN yum -y install gtk2 xdg-utils PackageKit-gtk3-module libcanberra-gtk3 \
  && rpm --import /opt/sac/RPM-GPG-KEY-SafenetAuthenticationClient \
