@@ -1,3 +1,6 @@
 [submodule "dscripts"]
 	path = dscripts
 	url = https://github.com/identinetics/dscripts.git
+[submodule "install/i-safenetac-linux"]
+	path = install/i-safenetac-linux
+	url = https://github.com/rhoerbe/i-safenetac-linux
