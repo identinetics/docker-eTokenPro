@@ -21,9 +21,7 @@ pipeline {
             steps {
                 sh '''
                 echo 'Testing PKCS11 Token'
-                ./dscripts/run.sh -IpV
-                sleep 1
-                ./dscripts/exec.sh -I /tests/test_hsm_token.sh
+                ./dscripts/run.sh -IpV /tests/test_hsm_token.sh
                 '''
             }
         }

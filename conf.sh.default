@@ -50,8 +50,9 @@ _set_run_args() {
     export ENVSETTINGS="$ENVSETTINGS -e PYKCS11PIN=Secret.1"  # configure token password
     export ENVSETTINGS="$ENVSETTINGS -e SOPIN=Secret.2"  # configure admin password
     export ENVSETTINGS="$ENVSETTINGS -e HSMUSBDEVICE=Aladdin.Knowledge.Systems.Token.JC" # output of lsusb
-    export ENVSETTINGS="$ENVSETTINGS -e HSMP11DEVICE="  # output of pkcs11-tool --list-token-slots with blanks subsituted by .
+    export ENVSETTINGS="$ENVSETTINGS -e HSMP11DEVICE="  # output of pkcs11-tool --list-token-slots (with blanks subsituted by .)
     export ENVSETTINGS="$ENVSETTINGS -e SOFTHSM="  # causes test scripts to skip lsusb
+    export ENVSETTINGS="$ENVSETTINGS -e JCE_CONF=/etc/softhsm_JCE.cfg"  # JCE PKCS11 config file
 
     export STARTCMD=''
     enable_pkcs11
