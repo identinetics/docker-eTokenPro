@@ -20,7 +20,7 @@ _set_volume_root() {
     # container volumes mounted to host paths, or symlinks to docker volumes
     DOCKERVOL_SHORT='./dv'
     DOCKERLOG_SHORT='./dl'
-    mkdir -p $$DOCKERVOL_ROOT $DOCKERVOL_LOG
+    mkdir -p $DOCKERVOL_SHORT $DOCKERLOG_SHORT
     DOCKER_VOLUME_ROOT='/var/lib/docker/volumes'  # hard coded - check for your config if applicable!
     #export DOCKERFILE_DIR=  # set this if the Dockerfile is not in the directory containing the dscripts subproject
 }
@@ -44,7 +44,7 @@ _set_image_signature_args() {
 
 
 _set_run_args() {
-    pkcs11lib="-e PYKCS11LIB=/usr/lib64/libetvTokenEngine.so"  # Safenet eTokenPro
+    pkcs11lib="/usr/lib64/libetvTokenEngine.so"  # Safenet eTokenPro
 
     export ENVSETTINGS="-e PYKCS11LIB=$pkcs11lib"
     export ENVSETTINGS="$ENVSETTINGS -e PYKCS11PIN=Secret.1"  # configure token password
