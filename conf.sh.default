@@ -53,7 +53,7 @@ _set_run_args() {
     export ENVSETTINGS="$ENVSETTINGS -e HSMP11DEVICE=eToken.5110"  # output of pkcs11-tool --list-token-slots (with blanks subsituted by .)
     export ENVSETTINGS="$ENVSETTINGS -e SOFTHSM="  # causes test scripts to skip lsusb
     export ENVSETTINGS="$ENVSETTINGS -e JCE_CONF=/etc/eTokenpro_JCE.conf"  # JCE PKCS11 config file
-    export ENVSETTINGS="$ENVSETTINGS -e P11KIT_DESC=SafeNet.eToken.PKCS#11
+    export ENVSETTINGS="$ENVSETTINGS -e P11KIT_DESC=SafeNet.eToken.PKCS#11"
 
     export STARTCMD=''
     enable_pkcs11
