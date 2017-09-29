@@ -15,7 +15,7 @@ COPY install/i-safenetac-linux/safenet/linux/Installation/Standard/RPM/SafenetAu
 COPY install/p11kit/* /root/.config/pkcs11/modules/
 COPY install/java_crypto/eTokenpro_JCE.cfg /etc/pki/java/
 # replace default SoftHSM configuration
-RUN ln -sf /etc/pki/eTokenpro_JCE.cfg /etc/pki/java/pkcs11.cfg
+RUN ln -sf /etc/pki/java/eTokenpro_JCE.cfg /etc/pki/java/pkcs11.cfg
 
 
 RUN yum -y install gtk2 xdg-utils PackageKit-gtk3-module libcanberra-gtk3 \
