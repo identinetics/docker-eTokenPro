@@ -13,6 +13,10 @@ LABEL version="0.5.0" \
 COPY install/i-safenetac-linux/safenet/linux/Installation/Standard/RPM/RPM-GPG-KEY-SafenetAuthenticationClient /opt/sac/
 COPY install/i-safenetac-linux/safenet/linux/Installation/Standard/RPM/SafenetAuthenticationClient-9.1.7-0.x86_64.rpm /opt/sac/SafenetAuthenticationClient_x86_64.rpm
 COPY install/p11kit/* /root/.config/pkcs11/modules/
+COPY install/java_crypto/eTokenpro_JCE.cfg /etc/pki/java/
+# replace default SoftHSM configuration
+RUN ln -sf /etc/pki/eTokenpro_JCE.cfg /etc/pki/java/pkcs11.cfg
+
 
 RUN yum -y install gtk2 xdg-utils PackageKit-gtk3-module libcanberra-gtk3 \
  && rpm --import /opt/sac/RPM-GPG-KEY-SafenetAuthenticationClient \
