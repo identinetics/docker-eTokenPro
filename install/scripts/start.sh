@@ -19,6 +19,7 @@ $sudo /usr/sbin/pcscd
 # HAVEGE Entropy Service disabled - not so useful on system with clock and modern Linux kernel
 #$sudo /usr/sbin/haveged
 
+source /opt/venv/py3/bin/activate
 printf 'entropy available: %s bytes\n' $(cat /proc/sys/kernel/random/entropy_avail)
 exec bash
 

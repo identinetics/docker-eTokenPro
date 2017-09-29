@@ -1,6 +1,6 @@
-FROM rhoerbe/keymgmt
-LABEL version="0.5.0" \
-      didi_dir="https://raw.githubusercontent.com/identinetics/keymgmt-safenetac/master/didi"
+# make identinetics/keymgmt available locally
+FROM local/keymgmt
+LABEL version="0.5.1"
 
 # Extend base image with Gemalto/Safenet/Alladin eTokenPro (eToken5110 etc.) support
 
@@ -17,10 +17,13 @@ COPY install/java_crypto/eTokenpro_JCE.cfg /etc/pki/java/
 # replace default SoftHSM configuration
 RUN ln -sf /etc/pki/java/eTokenpro_JCE.cfg /etc/pki/java/pkcs11.cfg
 
-
 RUN yum -y install gtk2 xdg-utils PackageKit-gtk3-module libcanberra-gtk3 \
  && rpm --import /opt/sac/RPM-GPG-KEY-SafenetAuthenticationClient \
  && rpm -i /opt/sac/SafenetAuthenticationClient_x86_64.rpm --nodeps \
+ && yum clean all
+
+# install pidof
+RUN yum -y install sysvinit-tools \
  && yum clean all
 
 # overwrite default start.sh
