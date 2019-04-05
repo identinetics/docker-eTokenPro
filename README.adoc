@@ -14,3 +14,25 @@ configured to work with secure LiveCD: https://github.com/identinetics/PVZDliveC
 SACTool does not work in this configuration (help would be welcome).
 The SAC-installation is used to install the PKCS11 card driver.
 Operations using pkcs11-tool and p11-toll do work.
+
+
+## Jenkins build / Access to private github repo
+
+The project has a git submodule residing in a private github repo.
+Steps to make Jenkins having access:
+
+    ssh-keygen -t ed25519  -f ~~.ssh/id_github_rhoerbe_isafenetaclinux
+
+Register the key with github.com/rhoerbe/i-safenetac-linux.
+
+Create this entry in .ssh/config of the jenkins user:
+
+    Host github_rhoerbe_isafenetaclinux
+        HostName github.com
+        User git
+        IdentityFile ~/.ssh/id_ed25519_github_isafenetaclinux
+
+Test the connection with:
+
+    ssh -T github_rhoerbe_isafenetaclinux
+
